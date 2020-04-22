@@ -1,3 +1,6 @@
+import random 
+
+
 class Pokemon:
   def __init__(self,name,lvl,typ,knocked_out,spd):
     self.name = name
@@ -13,16 +16,17 @@ class Pokemon:
     return self.name 
 
   def check_stats(self):
+    tmp_name =self.name.replace("Your ","") 
     print(f"""
 ===================
-\n{self.name} \nHealth {self.c_health}/{self.m_health}\nLevel {self.lvl}\nSpeed {self.spd}\nDefault attack {self.atck}
+\n{tmp_name} \nHealth {self.c_health}/{self.m_health}\nLevel {self.lvl}\nSpeed {self.spd}\nDefault attack {self.atck}
 """)
 
   def gain_exp(self):
     self.lvl += 1
     self.m_health += 20
     self.c_health = min(self.c_health + 20, self.m_health)
-    print(f"Level of {self.name} increased and now it is {self.lvl}. Max health got a boost as well and now it's {self.m_health}")
+    print(f"Level of {self.name} increased to level {self.lvl}. Max health got a boost as well and now it's {self.m_health}")
     
   def lose_health(self,damage):
     if self.c_health>0:
@@ -48,11 +52,11 @@ class Pokemon:
         print (f"Health of {self.name} is maxed out and it is {self.c_health}")
     
     else:
-      print (f"Health of {self.name} is {self.c_health} and doesn't need healing!")
+      print (f"You used potion but health of {self.name} is {self.c_health} and didn't need healing!")
 
   def knock_out(self):
     if self.knocked_out == True:
-      print (f"{self.name} has been knocked out")
+      print (f"\n{self.name} has been knocked out!\n")
 
   def revival(self):
     if self.knocked_out == True:
@@ -61,7 +65,7 @@ class Pokemon:
       print (f"{self.name} is back to life with {self.c_health} health")
 
   def attack(self,enemy):
-    damage = self.atck 
+    damage = self.atck + random.randint(1,5)
 
     if self.typ == enemy.typ:
       print(self.name, "attacks", enemy.name, "with normal damage of",damage)
@@ -72,9 +76,9 @@ class Pokemon:
       
       if power_dict[self.typ][enemy.typ] == 2:
         pass
-        print(f"{self.name} attacks {enemy.name} with double damage({damage}). {self.typ} against {enemy.typ} is very effective",)
+        print(f"{self.name} attacks {enemy.name} == > {damage}. {self.typ} against {enemy.typ} is very effective",)
       elif power_dict[self.typ][enemy.typ] == 0.5:
-        print(f"{self.name} attacks {enemy.name} with half the damage({damage}). {self.typ} against {enemy.typ} is not very effective",)
+        print(f"{self.name} attacks {enemy.name} == > {damage}. {self.typ} against {enemy.typ} is not very effective",)
         pass
 
       enemy.lose_health(damage)
@@ -101,7 +105,7 @@ class Trainer:
   def use_potion(self):
     if self.potions >0:
       self.potions -= 1
-      print(f"{self.name} uses potion on {self.pokemons_list[self.c_pokemon]}")
+      print(f"{self.name} uses potion on {self.pokemons_list[self.c_pokemon].name.replace('Your ','')}")
       self.pokemons_list[self.c_pokemon].gain_health()
     else:
       print ("You've run out of potions")
@@ -113,12 +117,17 @@ class Trainer:
     
     else:
       while True:
-        print (f"{enemy.pokemons_list[enemy.c_pokemon].name} {enemy.pokemons_list[enemy.c_pokemon].c_health}/{enemy.pokemons_list[enemy.c_pokemon].m_health} is in front of you, what do you want to do?")
+        enem_cur_pok = enemy.pokemons_list[enemy.c_pokemon]
+        cur_pok = self.pokemons_list[self.c_pokemon]
+        
+        print (f"""\n===========================================
+{enem_cur_pok.typ} {enem_cur_pok.name} {enem_cur_pok.c_health}/{enem_cur_pok.m_health} is in front of you!
+{cur_pok} has {cur_pok.c_health}/{cur_pok.m_health}
+What do you want to do?
+===========================================\n""")
         print("\n1) Fight! \n2) Use healing potion \n3) Retreat")
         answ = int(input("\n"))
         
-        cur_pok = self.pokemons_list[self.c_pokemon]
-        enem_cur_pok = enemy.pokemons_list[enemy.c_pokemon]
   
         if answ == 1:
           if cur_pok.knocked_out == True:
@@ -127,11 +136,11 @@ class Trainer:
           #main battle here 
           else:
             if cur_pok.spd > enem_cur_pok.spd:
-              print("Your pokemon is faster, it attacks first")
+              print("\nYour pokemon is faster, it attacks first\n===================FIGHT===================\n")
               cur_pok.attack(enem_cur_pok)
               enem_cur_pok.attack(cur_pok)
             else:
-              print("Enemy's pokemon is faster, it attacks first")
+              print("\nEnemy's pokemon is faster, it attacks first\n===================FIGHT===================\n")
               enem_cur_pok.attack(cur_pok)
               cur_pok.attack(enem_cur_pok)
 
@@ -139,7 +148,7 @@ class Trainer:
             cur_pok.gain_exp()
             enemy.pokemons_list.remove(enem_cur_pok)
             enemy.c_pokemon = 0
-            print(f"{enem_cur_pok} has been returned to the hospital. Again...")
+            #print(f"{enem_cur_pok} has been returned to the hospital. Again...")
             break
         elif answ == 2:
           Trainer.use_potion(self)
@@ -148,17 +157,18 @@ class Trainer:
 
   def switch_active_pokemon(self):
     old_pos = self.c_pokemon
+
     print(f"Your current Pokemon is {self.pokemons_list[self.c_pokemon]}")
     count_check = 0 
     for pokemon in range(len(self.pokemons_list)):
       if self.pokemons_list[pokemon].knocked_out == True:
-        print (pokemon+1,self.pokemons_list[pokemon],"is knocked out")
+        print (pokemon+1,self.pokemons_list[pokemon].name.replace("Your ",""),"is knocked out")
         count_check += 1
       else:
-        print (pokemon+1,self.pokemons_list[pokemon],f"{self.pokemons_list[pokemon].c_health}/{self.pokemons_list[pokemon].m_health} lvl {self.pokemons_list[pokemon].lvl}")
+        print (pokemon+1,self.pokemons_list[pokemon].name.replace("Your ",""),f"{self.pokemons_list[pokemon].c_health}/{self.pokemons_list[pokemon].m_health} lvl {self.pokemons_list[pokemon].lvl}")
 
     if count_check == 3:
-      print ("You lost the battle! As excpected ;) ")
+      print ("You lost the battle! As expected ;) ")
       return False
 
     while True:
@@ -191,9 +201,9 @@ ash_bulbasaur = Pokemon("Bulbasaur",5,"Grass",False,45)
 ash_squirtle = Pokemon("Squirtle",5,"Water",False,43)
 ash = Trainer("Ash",[ash_charmander,ash_bulbasaur,ash_squirtle],0,0)
 
-charmander = Pokemon("Charmander",3,"Fire",False,65)
-bulbasaur = Pokemon("Bulbasaur",3,"Grass",False,45)
-squirtle = Pokemon("Squirtle",3,"Water",False,43)
+charmander = Pokemon("Your Charmander",3,"Fire",False,65)
+bulbasaur = Pokemon("Your Bulbasaur",3,"Grass",False,45)
+squirtle = Pokemon("Your Squirtle",3,"Water",False,43)
 
   
 def battle():
