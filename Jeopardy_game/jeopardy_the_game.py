@@ -3,6 +3,7 @@ import random
 import time
 import re
 import j_symbols
+import sys,os
 
 df = pd.read_csv("jeopardy_f.csv")
 
@@ -23,8 +24,6 @@ df.category = df.category.apply(lambda x: x.lower())
 df.answer = df.answer.apply(lambda x: str(x).lower())
 df.question = df.question.apply(lambda x: re.sub(re.compile('<.*?>'), '', x))
 
-
-
 class Player:
 	"""docstring for Player """
 	def __init__(self,name,money=0,questions_answered=1,questions=None,skips=1,answers=None):
@@ -43,7 +42,6 @@ class Player:
 			print(f"{iteration}){i}\nCorrect answer was {x}. Your answer was {self.answers[iteration-1]}\n")
 			iteration +=1
 		
-
 	def user_input(self):
 		if self.answers == None:
 			self.answers = list()
@@ -64,7 +62,6 @@ class Player:
 
 		return self.money
 		
-
 	def generate_question(self):
 
 		easy_questions = df[df.value < 400].reset_index()
@@ -89,7 +86,6 @@ class Player:
 		
 		return current_row.question,current_row.answer,current_row.value
 		
-
 	def ask_question(self):
 		if self.questions_answered <=5:
 			print(f"You have {5-self.questions_answered+1} questions left!\nYour next question is:\n",j_symbols.c_print("line"))
