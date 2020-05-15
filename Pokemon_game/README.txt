@@ -1,1 +1,1 @@
-A pokemaster game 
+A pokemaster game made for codecademy challenge. 
