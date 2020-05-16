@@ -7,7 +7,7 @@ def censor(text,words_to_censor,double_occurrences):
 	to_remove=[]
 
 	for word in words_to_censor:
-		word = re.compile(r"\b{word}\b".format(word=word))
+		word = re.compile(rf"\b{word}\b")
 		for m in word.finditer(text):
 			to_remove.append([[m.group()],[m.start(),m.end()]])
 	for word in to_remove:
@@ -16,7 +16,7 @@ def censor(text,words_to_censor,double_occurrences):
 	to_remove =[]
 
 	for word in double_occurrences:
-		word = re.compile(r"\b{word}\b".format(word=word))
+		word = re.compile(rf"\b{word}\b")
 		for m in word.finditer(text):
 			to_remove.append([[m.group()],[m.start(),m.end()]])
 	
@@ -35,7 +35,7 @@ def censor_plus_next_words(text,list1,list2):
 	to_remove =[]
 
 	for word in big_list:
-		word = re.compile(r"\b\w*['-]?\w*\b ?\b{word}\b ?\b\w*['-]?\w*\b".format(word=word))
+		word = re.compile(rf"\b\w*['-]?\w*\b ?\b{word}\b ?\b\w*['-]?\w*\b")
 		for m in word.finditer(text):
 			to_remove.append([[m.group()],[m.start(),m.end()]])
 	to_remove.sort(key=lambda x: x[1][1])
