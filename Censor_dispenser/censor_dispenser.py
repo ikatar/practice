@@ -28,7 +28,11 @@ def censor_plus_next_words(text,list1,list2):
 	big_list = list1+list2
 	text = text.lower()
 	for word in big_list:
-		text = re.sub(r"\w*'?\w? {w} \w*'?\w?".format(w=word),"X"*len(word)+"",text)
+		search_pattern = re.compile(r"\w*['-_]?\w? {w} \w*['-_]?\w?".format(w=word))
+		length = search_pattern.findall(text)
+		if length:
+			#print(length[0],len(length[0]))
+			text = re.sub(r"\w*['-_]?\w? {w} \w*['-_]?\w?".format(w=word),"X"*len(length[0])+"",text)
 	return text
 
 email_one = open("email_one.txt", "r").read()
